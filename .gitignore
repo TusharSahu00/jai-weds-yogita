@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+debug.log
+
+# Local prototypes and discarded experiments
+/experiments/
+/scripts/
+/src/PortalTunnel.tsx
+/src/Art.tsx
+/public/assets/experiments/
+/public/assets/ring-reveal/frames/
+/public/assets/ring-reveal/frames-desktop/
+/public/assets/ring-reveal/ring-reveal.mp4
+
+# Local exports and preview artifacts
+/jai-yogita-cpanel.zip
+/royal-couple-desktop.png
+/royal-couple-mobile.png
+/public/assets/timeline/*.png
+/public/assets/royal-sitar.mp3

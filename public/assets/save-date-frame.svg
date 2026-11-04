@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 620" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff9e9"/><stop offset=".54" stop-color="#ffedc8"/><stop offset="1" stop-color="#f9dca8"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f9d58b"/><stop offset=".32" stop-color="#bd7225"/><stop offset=".63" stop-color="#f2bd65"/><stop offset="1" stop-color="#a95d1c"/></linearGradient>
+    <pattern id="grain" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r=".55" fill="#d29f5a" opacity=".19"/><circle cx="8" cy="9" r=".4" fill="#b87334" opacity=".13"/></pattern>
+    <filter id="lift" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#8f562b" flood-opacity=".22"/></filter>
+    <path id="shape" d="M70 610C35 610 18 589 18 552V173C18 132 32 116 79 111C88 91 107 85 132 83C155 67 300 60 375 52L410 21L445 52C520 60 665 67 688 83C713 85 732 91 741 111C788 116 802 132 802 173V552C802 589 785 610 750 610Z"/>
+  </defs>
+  <use href="#shape" fill="url(#paper)" stroke="url(#edge)" stroke-width="5" filter="url(#lift)"/>
+  <use href="#shape" fill="url(#grain)"/>
+  <path d="M72 600C43 600 29 583 29 552V175C29 141 42 126 86 122C95 103 111 97 137 94C163 79 305 71 380 63L410 36L440 63C515 71 657 79 683 94C709 97 725 103 734 122C778 126 791 141 791 175V552C791 583 777 600 748 600Z" fill="none" stroke="#fff8dc" stroke-width="4"/>
+  <path d="M74 594C49 594 35 578 35 551V177C35 146 48 132 91 128C100 110 115 104 140 101C168 86 310 78 383 69L410 44L437 69C510 78 652 86 680 101C705 104 720 110 729 128C772 132 785 146 785 177V551C785 578 771 594 746 594Z" fill="none" stroke="#d69a48" stroke-opacity=".7" stroke-width="1.5"/>
+  <g fill="none" stroke="#d8a25d" stroke-width="1.2" opacity=".45"><path d="M93 207h80m-80 8h55M727 207h-80m80 8h-55M93 526h67m-67 8h48M727 526h-67m67 8h-48"/><path d="M68 179c13 3 22 12 24 24m660-24c-13 3-22 12-24 24M68 548c13-3 22-12 24-24m660 24c-13-3-22-12-24-24"/></g>
+  <g fill="#c4873e" opacity=".7"><path d="M102 236l5 7-5 7-5-7ZM718 236l5 7-5 7-5-7ZM102 495l5 7-5 7-5-7ZM718 495l5 7-5 7-5-7Z"/></g>
+</svg>
