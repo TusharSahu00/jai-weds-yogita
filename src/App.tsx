@@ -171,8 +171,43 @@ const gallerySlides = [
 ]
 
 function Gallery() {
-  const [active, setActive] = useState(0)
-  const step = (direction: number) => setActive(index => (index + direction + gallerySlides.length) % gallerySlides.length)
+  const slideCount = gallerySlides.length
+  const [position, setPosition] = useState(slideCount * 2)
+  const [animateRing, setAnimateRing] = useState(true)
+  const dragStart = useRef<{x: number; y: number} | null>(null)
+  const dragged = useRef(false)
+  const active = ((position % slideCount) + slideCount) % slideCount
+  const goTo = (target: number) => {
+    let difference = (target - active + slideCount) % slideCount
+    if (difference > slideCount / 2) difference -= slideCount
+    setPosition(current => current + difference)
+  }
+  const step = (direction: number) => setPosition(current => current + direction)
+
+  useEffect(() => {
+    if (position >= slideCount && position < slideCount * 4) return
+    // Recenter on an identical copy once a full loop finishes. The image and
+    // its neighbors occupy the same positions, so the reset is imperceptible.
+    setAnimateRing(false)
+    setPosition(current => slideCount * 2 + (((current % slideCount) + slideCount) % slideCount))
+    const frame = window.requestAnimationFrame(() => setAnimateRing(true))
+    return () => window.cancelAnimationFrame(frame)
+  }, [position, slideCount])
+
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    dragStart.current = {x: event.clientX, y: event.clientY}
+    dragged.current = false
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+  const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return
+    const dx = event.clientX - dragStart.current.x
+    const dy = event.clientY - dragStart.current.y
+    dragged.current = Math.abs(dx) > 12
+    dragStart.current = null
+    if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.15) step(dx < 0 ? 1 : -1)
+  }
 
   return <section className="gallery" aria-labelledby="gallery-title">
     <Mandala side="right"/><Mandala side="left"/>
@@ -182,20 +217,24 @@ function Gallery() {
         <h2 id="gallery-title">Royal Gallery</h2>
         <Ornament className="gallery__ornament" />
       </header>
-      <div className="gallery__carousel" role="region" aria-roledescription="carousel" aria-label="Wedding gallery">
-        {gallerySlides.map((slide, index) => {
-          let offset = index - active
-          if (offset > gallerySlides.length / 2) offset -= gallerySlides.length
-          if (offset < -gallerySlides.length / 2) offset += gallerySlides.length
+      <div className="gallery__carousel" role="region" aria-roledescription="carousel" aria-label="Wedding gallery" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { dragStart.current = null }} onClickCapture={event => {
+        if (dragged.current) { event.preventDefault(); event.stopPropagation(); dragged.current = false }
+      }}>
+        {Array.from({length: slideCount * 5}, (_, physicalIndex) => {
+          const slideIndex = physicalIndex % slideCount
+          const slide = gallerySlides[slideIndex]
+          const offset = physicalIndex - position
+          const visible = Math.abs(offset) <= 2
           return <button
-            className={`gallery__slide${offset === 0 ? ' is-active' : ''}`}
+            className={`gallery__slide${offset === 0 ? ' is-active' : ''}${animateRing ? '' : ' is-recentering'}`}
             data-position={offset === 0 ? 'current' : Math.abs(offset) === 1 ? 'adjacent' : 'far'}
             type="button"
-            key={index}
-            style={{ '--gallery-angle': `${offset * 360 / gallerySlides.length}deg` } as CSSProperties}
+            key={`${physicalIndex}-${slide.title}`}
+            style={{ '--gallery-angle': `${offset * 360 / slideCount}deg`, '--gallery-offset': offset } as CSSProperties}
             aria-label={`${offset === 0 ? 'Current photo' : 'Show photo'}: ${slide.title}`}
             aria-current={offset === 0 ? 'true' : undefined}
-            onClick={() => offset === 0 ? undefined : setActive(index)}
+            aria-hidden={!visible}
+            onClick={() => offset === 0 ? undefined : goTo(slideIndex)}
             tabIndex={offset === 0 ? 0 : -1}
           >
             <span className="gallery__photo"><img src={slide.src} alt={slide.alt} loading="lazy"/><span className="gallery__caption">{slide.title}</span></span>
@@ -205,7 +244,7 @@ function Gallery() {
       <nav className="gallery__controls" aria-label="Gallery controls">
         <button className="gallery__arrow" type="button" onClick={() => step(-1)} aria-label="Previous photo"><span aria-hidden="true">‹</span></button>
         <div className="gallery__dots" role="group" aria-label="Choose a photo">
-          {gallerySlides.map((slide, index) => <button key={`${slide.title}-${index}`} type="button" className={`gallery__dot${index === active ? ' is-active' : ''}`} onClick={() => setActive(index)} aria-label={`Show ${slide.title}`} aria-current={index === active ? 'true' : undefined}/>) }
+          {gallerySlides.map((slide, index) => <button key={`${slide.title}-${index}`} type="button" className={`gallery__dot${index === active ? ' is-active' : ''}`} onClick={() => goTo(index)} aria-label={`Show ${slide.title}`} aria-current={index === active ? 'true' : undefined}/>) }
         </div>
         <button className="gallery__arrow" type="button" onClick={() => step(1)} aria-label="Next photo"><span aria-hidden="true">›</span></button>
       </nav>
