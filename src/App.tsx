@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type FormEvent } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -6,7 +6,9 @@ import { GaneshMark } from './GaneshMark'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 const weddingTime = new Date('2026-11-21T19:00:00+05:30').getTime()
-const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('N. R. Paradise, Sitawali Phatak, Benad Road, Jaipur, Rajasthan')
+const venueCoordinates = '26.9881789,75.7408696'
+const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venueCoordinates)}`
+const venueMapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(venueCoordinates)}&z=16&output=embed`
 
 function remainingTime() {
   const ms = Math.max(0, weddingTime - Date.now())
@@ -15,6 +17,182 @@ function remainingTime() {
 
 function Ornament({ className = '' }: { className?: string }) {
   return <svg className={className} viewBox="0 0 220 50" fill="none" aria-hidden="true"><path d="M0 25h75m70 0h75M80 25c14-2 20-13 30-23 10 10 16 21 30 23-14 2-20 13-30 23-10-10-16-21-30-23Z" stroke="currentColor" strokeWidth="1.3"/><circle cx="110" cy="25" r="5" fill="currentColor"/></svg>
+}
+
+function VenueIcon({ kind }: { kind: 'date' | 'time' | 'place' }) {
+  return <svg className="venue-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {kind === 'date' && <><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9h17M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></>}
+    {kind === 'time' && <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></>}
+    {kind === 'place' && <><path d="M20 10.2c0 5.1-8 11-8 11s-8-5.9-8-11a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.4"/></>}
+  </svg>
+}
+
+function PersonIcon() {
+  return <svg className="rsvp-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.4a7 7 0 0 1 14 0V20"/></svg>
+}
+
+function RSVPSection() {
+  const [attendance, setAttendance] = useState<'yes' | 'no'>('yes')
+  const [guestCount, setGuestCount] = useState(1)
+  const [submitted, setSubmitted] = useState(false)
+  const [guestName, setGuestName] = useState('')
+  const updateCount = (amount: number) => setGuestCount(count => Math.min(20, Math.max(1, count + amount)))
+
+  const submitRSVP = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmitted(true)
+  }
+
+  return <section className="rsvp" id="rsvp" aria-labelledby="rsvp-title">
+    <Mandala side="right"/><Mandala side="left"/>
+    <header className="rsvp__heading">
+      <p>Kindly reply</p>
+      <h2 id="rsvp-title">Your presence means so much</h2>
+      <Ornament className="rsvp__ornament"/>
+      <span>Jai &amp; Yogita · 21 November 2026</span>
+    </header>
+    <form className="rsvp-card" onSubmit={submitRSVP}>
+      <div className="rsvp-card__intro"><span className="rsvp-card__seal" aria-hidden="true">J<span>&amp;</span>Y</span><h3>Will you join us?</h3><p>We would be delighted to celebrate together.</p></div>
+      <label className="rsvp-field">
+        <span className="rsvp-field__label">Your name</span>
+        <span className="rsvp-field__control"><PersonIcon/><input type="text" name="guest-name" autoComplete="name" placeholder="Full name" value={guestName} onChange={event => {setGuestName(event.target.value);setSubmitted(false)}} required /></span>
+      </label>
+      <fieldset className="rsvp-attendance">
+        <legend className="rsvp-field__label">Will you be attending?</legend>
+        <label className={`rsvp-choice${attendance === 'yes' ? ' is-selected' : ''}`}>
+          <input type="radio" name="attendance" value="yes" checked={attendance === 'yes'} onChange={() => {setAttendance('yes');setSubmitted(false)}}/>
+          <span className="rsvp-choice__heart" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 27S4 19.5 4 11.5C4 5.7 11.2 3 16 9c4.8-6 12-3.3 12 2.5C28 19.5 16 27 16 27Z"/></svg></span>
+          <strong>Joyfully accept</strong><small>We’ll be there</small>
+        </label>
+        <label className={`rsvp-choice${attendance === 'no' ? ' is-selected' : ''}`}>
+          <input type="radio" name="attendance" value="no" checked={attendance === 'no'} onChange={() => {setAttendance('no');setSubmitted(false)}}/>
+          <span className="rsvp-choice__heart" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 27S4 19.5 4 11.5C4 5.7 11.2 3 16 9c4.8-6 12-3.3 12 2.5C28 19.5 16 27 16 27Z"/><path d="m7 7 18 18"/></svg></span>
+          <strong>Regretfully decline</strong><small>With you in spirit</small>
+        </label>
+      </fieldset>
+      <div className={`rsvp-guests${attendance === 'no' ? ' is-disabled' : ''}`}>
+        <span className="rsvp-field__label" id="rsvp-guests-label">Number attending</span>
+        <div className="rsvp-guests__control">
+          <span className="rsvp-guests__people" aria-hidden="true"><PersonIcon/></span>
+          <span className="rsvp-guests__text">Including you</span>
+          <button type="button" onClick={() => updateCount(-1)} disabled={attendance === 'no' || guestCount <= 1} aria-label="Remove one guest">−</button>
+          <output aria-labelledby="rsvp-guests-label">{attendance === 'no' ? '—' : guestCount}</output>
+          <button type="button" onClick={() => updateCount(1)} disabled={attendance === 'no' || guestCount >= 20} aria-label="Add one guest">+</button>
+        </div>
+      </div>
+      <label className="rsvp-field rsvp-field--message">
+        <span className="rsvp-field__label">A wish for the couple <small>Optional</small></span>
+        <textarea name="message" rows={3} maxLength={400} placeholder="Write a note for Jai & Yogita…" onChange={() => setSubmitted(false)}/>
+      </label>
+      <button className="rsvp-submit" type="submit"><span>{submitted ? 'Reply prepared' : 'Send your reply'}</span><span aria-hidden="true">↗</span></button>
+      {submitted && <p className="rsvp-status" role="status">Thank you, {guestName}. This is a preview for now; your reply has not been sent to the family yet.</p>}
+    </form>
+    <p className="rsvp__footnote">With love, <strong>The Mothya Family</strong></p>
+  </section>
+}
+
+type Wish = { name: string; message: string; preview?: boolean }
+
+function WishesSection() {
+  const [name, setName] = useState('')
+  const [message, setMessage] = useState('')
+  const [wishes, setWishes] = useState<Wish[]>([])
+  const [submitted, setSubmitted] = useState(false)
+  const blessings = [
+    'May your days be full of laughter, patience, and the quiet joy of choosing each other.',
+    'May every new chapter bring shared adventures and a home filled with warmth.',
+    'Wishing you a lifetime of little joys, big dreams, and hands held through it all.',
+  ]
+
+  const submitWish = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setWishes(current => [{ name: name.trim(), message: message.trim(), preview: true }, ...current])
+    setSubmitted(true)
+    setName('')
+    setMessage('')
+  }
+
+  return <section className="wishes" id="wishes" aria-labelledby="wishes-title">
+    <Mandala side="right"/><Mandala side="left"/>
+    <div className="wishes__inner">
+      <header className="wishes__heading">
+        <p>Words to keep close</p>
+        <h2 id="wishes-title">A wall of blessings</h2>
+        <Ornament className="wishes__ornament"/>
+        <span>Leave Jai &amp; Yogita a note for the years ahead</span>
+      </header>
+      <div className="wishes__layout">
+        <div className="wishes__wall" aria-label="Wedding blessings">
+          <div className="wishes__wall-heading"><span aria-hidden="true">✦</span><p>With love, for the two of you</p><span aria-hidden="true">✦</span></div>
+          {wishes.map((wish, index) => <article className="wish-card wish-card--new" key={`${wish.name}-${index}`}>
+            <span className="wish-card__number">A note from your guest</span>
+            <p>“{wish.message}”</p>
+            <footer>— {wish.name} <small>{wish.preview && '· this preview'}</small></footer>
+          </article>)}
+          {blessings.map((blessing, index) => <article className={`wish-card wish-card--${index + 1}`} key={blessing}>
+            <span className="wish-card__number">Blessing {String(index + 1).padStart(2, '0')}</span>
+            <p>“{blessing}”</p>
+            <footer>For Jai &amp; Yogita <span aria-hidden="true">✧</span></footer>
+          </article>)}
+        </div>
+        <form className="wishes-form" onSubmit={submitWish}>
+          <div className="wishes-form__top"><span aria-hidden="true">J <i>&amp;</i> Y</span><p>Leave a blessing</p><small>A few heartfelt words make a keepsake.</small></div>
+          <label className="wishes-form__field">
+            <span>Your name</span>
+            <input value={name} onChange={event => {setName(event.target.value);setSubmitted(false)}} name="wish-name" autoComplete="name" placeholder="How should we sign it?" maxLength={70} required />
+          </label>
+          <label className="wishes-form__field wishes-form__field--message">
+            <span>Your message <small>Up to 400 characters</small></span>
+            <textarea value={message} onChange={event => {setMessage(event.target.value);setSubmitted(false)}} name="wish-message" placeholder="Share a memory, a wish, or a few words from the heart…" maxLength={400} rows={5} required />
+            <small className="wishes-form__count">{message.length} / 400</small>
+          </label>
+          <button type="submit" className="wishes-form__submit"><span>Add your wish</span><span aria-hidden="true">✦</span></button>
+          {submitted && <p className="wishes-form__status" role="status">Your note has been added to this preview on this device. It hasn’t been shared with the family.</p>}
+          <p className="wishes-form__footnote">With warmest thanks <span aria-hidden="true">♡</span></p>
+        </form>
+      </div>
+    </div>
+  </section>
+}
+
+function ContactAndClosing() {
+  return <>
+    <section className="day-contact" id="day-contact" aria-labelledby="day-contact-title">
+      <Mandala side="left"/>
+      <header className="day-contact__heading">
+        <p>Here for the little things</p>
+        <h2 id="day-contact-title">A helping hand on the day</h2>
+        <Ornament className="day-contact__ornament"/>
+        <span>Directions, last-minute questions, baraat logistics — all welcome.</span>
+      </header>
+      <article className="day-contact__card">
+        <span className="day-contact__badge" aria-hidden="true">✦</span>
+        <div className="day-contact__copy">
+          <p className="day-contact__eyebrow">Officially unofficial family help</p>
+          <h3>Tushar Sahu</h3>
+          <p className="day-contact__role">Dulhe ka chhota bhai <span>·</span> on-call problem solver</p>
+          <a className="day-contact__number" href="tel:+918824377743">+91 88243 77743</a>
+        </div>
+        <div className="day-contact__actions">
+          <a className="day-contact__action day-contact__action--call" href="tel:+918824377743" aria-label="Call Tushar Sahu"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3.8 4.9 3a1.5 1.5 0 0 0-1.8.6c-.8 1.3-1 2.9-.5 4.4 1.7 5.3 6.1 9.7 11.4 11.4 1.5.5 3.1.3 4.4-.5a1.5 1.5 0 0 0 .6-1.8l-.8-2.1a1.5 1.5 0 0 0-1.5-.9l-2.4.2a1.5 1.5 0 0 0-1.3 1.1l-.3 1a14 14 0 0 1-5.5-5.5l1-.3a1.5 1.5 0 0 0 1.1-1.3l.2-2.4A1.5 1.5 0 0 0 8.6 5Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg><span>Call</span></a>
+          <a className="day-contact__action day-contact__action--whatsapp" href="https://wa.me/918824377743" target="_blank" rel="noopener noreferrer" aria-label="Message Tushar Sahu on WhatsApp"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11.7a8 8 0 0 1-11.8 7L4 20l1.3-4.1A8 8 0 1 1 20 11.7Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 8.4c.2-.4.5-.4.7-.4h.4c.2 0 .3.1.4.4l.6 1.4c.1.2.1.4 0 .5l-.5.6c-.2.2-.2.3-.1.5.4.7 1 1.3 1.8 1.7.2.1.3.1.5-.1l.7-.8c.2-.2.3-.2.5-.1l1.4.7c.2.1.3.2.3.4 0 .3-.2 1-.6 1.3-.4.4-.9.5-1.4.4a8 8 0 0 1-3.5-1.8 7.8 7.8 0 0 1-2.1-2.9c-.2-.6-.1-1.2.2-1.7Z" fill="currentColor"/></svg><span>WhatsApp</span></a>
+        </div>
+        <p className="day-contact__aside">For urgent questions, ring. For everything else, a WhatsApp is kinder to the baraat.</p>
+      </article>
+    </section>
+    <footer className="wedding-close">
+      <Mandala side="left"/>
+      <div className="wedding-close__inner">
+        <p className="wedding-close__script">With all our love</p>
+        <h2>Jai <span>&amp;</span> Yogita</h2>
+        <Ornament className="wedding-close__ornament"/>
+        <p className="wedding-close__date">21 November 2026 <span>·</span> Jaipur</p>
+        <p className="wedding-close__hashtag">#JaiWedsYogita</p>
+        <div className="wedding-close__rule"><span>✦</span></div>
+        <p className="wedding-close__credit">Designed by <a href="tel:+918824377743">Tushar Sahu</a>, the dulhe ka chhota bhai — because apparently the baraat wasn’t enough responsibility.</p>
+      </div>
+    </footer>
+  </>
 }
 
 function AuspiciousMark() {
@@ -362,6 +540,10 @@ export default function App() {
     gsap.to('.gallery .mandala-scroll--left', { rotation: 900, ease: 'none', scrollTrigger: { trigger: '.gallery', start: 'top bottom', end: 'bottom top', scrub: .35 } })
     gsap.to('.gallery .mandala-scroll--right', { rotation: -900, ease: 'none', scrollTrigger: { trigger: '.gallery', start: 'top bottom', end: 'bottom top', scrub: .35 } })
     gsap.from('.details-card', { y: 48, opacity: 0, duration: 1, ease: 'power2.out', scrollTrigger: { trigger: '.details', start: 'top 75%', toggleActions: 'play none none reverse' } })
+    gsap.from('.rsvp__heading > *, .rsvp-card', { y: 28, opacity: 0, stagger: .12, duration: .8, ease: 'power2.out', scrollTrigger: { trigger: '.rsvp', start: 'top 78%', toggleActions: 'play none none reverse' } })
+    gsap.from('.wishes__heading > *, .wish-card, .wishes-form', { y: 30, opacity: 0, stagger: .1, duration: .75, ease: 'power2.out', scrollTrigger: { trigger: '.wishes', start: 'top 78%', toggleActions: 'play none none reverse' } })
+    gsap.from('.day-contact__heading > *, .day-contact__card', { y: 28, opacity: 0, stagger: .12, duration: .8, ease: 'power2.out', scrollTrigger: { trigger: '.day-contact', start: 'top 78%', toggleActions: 'play none none reverse' } })
+    gsap.from('.wedding-close__inner > *', { y: 18, opacity: 0, stagger: .08, duration: .7, ease: 'power2.out', scrollTrigger: { trigger: '.wedding-close', start: 'top 85%', toggleActions: 'play none none reverse' } })
   }, { scope: root, dependencies: [reducedMotion], revertOnUpdate: true })
 
   return <div className="site" ref={root}>
@@ -394,10 +576,34 @@ export default function App() {
 
       <Festivities/>
 
-      <section className="details" id="details" aria-labelledby="details-title"><div className="details-card">
-        <GaneshMark className="details-ganesh"/><p className="details-family" lang="hi">मोठ्या परिवार</p><p className="eyebrow">Invites you to celebrate</p><h2 id="details-title">Jai <em>&</em> Yogita</h2><Ornament className="details-ornament"/>
-        <div className="details-date"><span>Saturday</span><strong>21 November 2026</strong></div><div className="details-divider"/><p className="details-label">Blessings & dinner</p><p className="details-time">From 7:00 PM</p><div className="details-divider"/><p className="details-label">At</p><h3>N. R. Paradise</h3><p className="details-address">Sitawali Phatak, Benad Road<br/>Jaipur, Rajasthan</p><a className="directions" href={mapsUrl} target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">↗</span></a>
-      </div><footer>Jai & Yogita <span>✦</span> 21.11.2026</footer></section>
+      <section className="details" id="details" aria-labelledby="details-title">
+        <Mandala side="right"/><Mandala side="left"/>
+        <div className="details-card">
+          <header className="details-card__heading">
+            <GaneshMark className="details-ganesh"/>
+            <p className="details-family" lang="hi">मोठ्या परिवार</p>
+            <p className="eyebrow">Invite you to celebrate</p>
+            <p className="details-kicker">Join us at</p>
+            <h2 id="details-title">N. R. Paradise</h2>
+            <Ornament className="details-ornament"/>
+          </header>
+          <div className="details-facts">
+            <div className="details-fact"><span className="details-fact__icon"><VenueIcon kind="date"/></span><p><span>Date</span><strong>Saturday, 21 November 2026</strong></p></div>
+            <div className="details-fact"><span className="details-fact__icon"><VenueIcon kind="time"/></span><p><span>Blessings &amp; dinner</span><strong>From 7:00 PM</strong></p></div>
+            <div className="details-fact"><span className="details-fact__icon"><VenueIcon kind="place"/></span><p><span>Jaipur, Rajasthan</span><strong>Sitawali Phatak, Benad Road</strong></p></div>
+          </div>
+          <a className="directions" href={mapsUrl} target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">↗</span></a>
+          <div className="venue-map" aria-label="Map showing N. R. Paradise in Jhotwara, Jaipur">
+            <iframe title="Map to N. R. Paradise, Sitawali Phatak, Benad Road, Jaipur" src={venueMapEmbed} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+            <a className="venue-map__open" href={mapsUrl} target="_blank" rel="noopener noreferrer">Open map <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <footer>Jai <span>✦</span> Yogita <span>✦</span> 21.11.2026</footer>
+      </section>
+
+      <RSVPSection/>
+      <WishesSection/>
+      <ContactAndClosing/>
     </main>
     {!reducedMotion && <FlowerFall/>}
   </div>
