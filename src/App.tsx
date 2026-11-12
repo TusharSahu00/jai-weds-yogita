@@ -320,7 +320,7 @@ function RoyalCouple() {
       <div className="royal-couple__portraits">
         <article className="royal-portrait royal-portrait--groom">
           <div className="royal-portrait__art">
-            <img className="royal-portrait__image" src="/assets/couple/groom.webp" alt="Symbolic illustrated portrait of the groom" loading="lazy" />
+            <img className="royal-portrait__image" src="/assets/couple/groom-portrait.png" alt="Jai in an ivory embroidered sherwani and maroon stole" loading="lazy" />
             <img className="royal-portrait__frame" src="/assets/couple/portrait-frame.svg" alt="" />
           </div>
           <p>The Groom</p><h3>Jai</h3><p className="royal-portrait__nickname"><span>aka</span><strong>Vishal</strong></p>
@@ -328,7 +328,7 @@ function RoyalCouple() {
         <span className="royal-couple__amp">Weds</span>
         <article className="royal-portrait royal-portrait--bride">
           <div className="royal-portrait__art">
-            <img className="royal-portrait__image" src="/assets/couple/bride.webp" alt="Symbolic illustrated portrait of the bride" loading="lazy" />
+            <img className="royal-portrait__image" src="/assets/couple/bride-portrait.png" alt="Yogita in a maroon embroidered bridal outfit beneath a palace arch" loading="lazy" />
             <img className="royal-portrait__frame" src="/assets/couple/portrait-frame.svg" alt="" />
           </div>
           <p>The Bride</p><h3>Yogita</h3><p className="royal-portrait__nickname"><span>aka</span><strong>Gudiya</strong></p>
@@ -438,15 +438,18 @@ type WeddingMoment = {
   id: string
   hindi: string
   title: string
+  date: string
   times: string[]
   place?: string[]
 }
 
 const weddingMoments: WeddingMoment[] = [
-  { id: 'nikasi', hindi: 'निकासी', title: 'Nikasi', times: ['9:15 AM'], place: ['Family residence'] },
-  { id: 'lagan-sagai', hindi: 'लग्न-सगाई', title: 'Lagan–Sagai', times: ['11:00 AM'] },
-  { id: 'baraat', hindi: 'बारात रवानगी', title: 'Baraat Departure', times: ['6:00 PM'], place: ['Shiv Shakti Enterprises', 'Near Kasturi Bagh', 'Proceeding to N. R. Paradise'] },
-  { id: 'wedding', hindi: 'पाणिग्रहण संस्कार', title: 'The Wedding Ceremony', times: ['At an auspicious time', 'Blessings & dinner from 7:00 PM'], place: ['N. R. Paradise', 'Sitawali Phatak · Benad Road · Jaipur'] },
+  { id: 'sangeet', hindi: 'संगीत', title: 'Sangeet', date: '19 NOVEMBER 2026', times: [] },
+  { id: 'haldi', hindi: 'हल्दी', title: 'Haldi', date: '19 NOVEMBER 2026', times: [] },
+  { id: 'nikasi', hindi: 'निकासी', title: 'Nikasi', date: '21 NOVEMBER 2026', times: ['9:15 AM'], place: ['Family residence'] },
+  { id: 'lagan-sagai', hindi: 'लग्न-सगाई', title: 'Lagan–Sagai', date: '21 NOVEMBER 2026', times: ['11:00 AM'] },
+  { id: 'baraat', hindi: 'बारात रवानगी', title: 'Baraat Departure', date: '21 NOVEMBER 2026', times: ['6:00 PM'], place: ['Shiv Shakti Enterprises', 'Near Kasturi Bagh', 'Proceeding to N. R. Paradise'] },
+  { id: 'wedding', hindi: 'पाणिग्रहण संस्कार', title: 'The Wedding Ceremony', date: '21 NOVEMBER 2026', times: ['At an auspicious time', 'Blessings & dinner from 7:00 PM'], place: ['N. R. Paradise', 'Sitawali Phatak · Benad Road · Jaipur'] },
 ]
 
 function EventScroll({ event, index }: { event: WeddingMoment; index: number }) {
@@ -470,15 +473,15 @@ function Festivities() {
     <div className="festivities__mandala festivities__mandala--top" aria-hidden="true"/>
     <div className="festivities__mandala festivities__mandala--bottom" aria-hidden="true"/>
     <header className="festivities__heading">
-      <p className="festivities__script">Saturday · 21 November 2026</p>
-      <h2 id="festivities-title">The Wedding Day</h2>
+      <p className="festivities__script">19 &amp; 21 November 2026</p>
+      <h2 id="festivities-title">Wedding Celebrations</h2>
       <Ornament className="festivities__ornament" />
     </header>
     <div className="festivities__timeline">
       <div className="festivities__route" aria-hidden="true"><span className="festivities__route-line"/><span className="festivities__route-progress"/><div className="festivities__route-garland">{Array.from({length: 23}, (_, index) => <span className="festivities__route-bloom" style={{top: `${((index + 1) * 100) / 24}%`}} key={index}><img src="/assets/hero/marigold-floret.webp" alt=""/></span>)}</div><div className="festivities__flower festivities__flower--start"><img src="/assets/hero/marigold-floret.webp" alt=""/><img src="/assets/hero/rose-petal.webp" alt=""/><img src="/assets/hero/marigold-floret.webp" alt=""/></div><div className="festivities__flower festivities__flower--end"><img src="/assets/hero/marigold-floret.webp" alt=""/><img src="/assets/hero/rose-petal.webp" alt=""/><img src="/assets/hero/marigold-floret.webp" alt=""/></div><div className="festivities__car"><WeddingCar/></div></div>
       {weddingMoments.map((event, index) => <article key={event.id} className={`event-stop event-stop--${index % 2 === 0 ? 'left' : 'right'}`}>
         <EventScroll event={event} index={index + 1}/>
-        <div className="event-stop__details"><span>21 NOVEMBER 2026</span><div className="event-stop__times">{event.times.map(time => <p key={time}>{time}</p>)}</div></div>
+        <div className="event-stop__details"><span>{event.date}</span><div className="event-stop__times">{event.times.map(time => <p key={time}>{time}</p>)}</div></div>
       </article>)}
     </div>
   </section>
