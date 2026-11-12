@@ -181,16 +181,7 @@ function ContactAndClosing() {
       </article>
     </section>
     <footer className="wedding-close">
-      <Mandala side="left"/>
-      <div className="wedding-close__inner">
-        <p className="wedding-close__script">With all our love</p>
-        <h2>Jai <span>&amp;</span> Yogita</h2>
-        <Ornament className="wedding-close__ornament"/>
-        <p className="wedding-close__date">21 November 2026 <span>·</span> Jaipur</p>
-        <p className="wedding-close__hashtag">#JaiWedsYogita</p>
-        <div className="wedding-close__rule"><span>✦</span></div>
-        <p className="wedding-close__credit">Designed by <a href="tel:+918824377743">Tushar Sahu</a>, the dulhe ka chhota bhai — because apparently the baraat wasn’t enough responsibility.</p>
-      </div>
+      <p className="wedding-close__credit">Designed by <a href="tel:+918824377743">Tushar Sahu</a></p>
     </footer>
   </>
 }
@@ -320,7 +311,7 @@ function RoyalCouple() {
       <div className="royal-couple__portraits">
         <article className="royal-portrait royal-portrait--groom">
           <div className="royal-portrait__art">
-            <img className="royal-portrait__image" src="/assets/couple/groom-portrait.png" alt="Jai in an ivory embroidered sherwani and maroon stole" loading="lazy" />
+            <img className="royal-portrait__image" src="/assets/couple/groom-portrait.jpg" alt="Jai in an ivory embroidered sherwani and maroon stole" loading="lazy" decoding="async" />
             <img className="royal-portrait__frame" src="/assets/couple/portrait-frame.svg" alt="" />
           </div>
           <p>The Groom</p><h3>Jai</h3><p className="royal-portrait__nickname"><span>aka</span><strong>Vishal</strong></p>
@@ -328,7 +319,7 @@ function RoyalCouple() {
         <span className="royal-couple__amp">Weds</span>
         <article className="royal-portrait royal-portrait--bride">
           <div className="royal-portrait__art">
-            <img className="royal-portrait__image" src="/assets/couple/bride-portrait.png" alt="Yogita in a maroon embroidered bridal outfit beneath a palace arch" loading="lazy" />
+            <img className="royal-portrait__image" src="/assets/couple/bride-portrait.jpg" alt="Yogita in a maroon embroidered bridal outfit beneath a palace arch" loading="lazy" decoding="async" />
             <img className="royal-portrait__frame" src="/assets/couple/portrait-frame.svg" alt="" />
           </div>
           <p>The Bride</p><h3>Yogita</h3><p className="royal-portrait__nickname"><span>aka</span><strong>Gudiya</strong></p>
@@ -338,14 +329,29 @@ function RoyalCouple() {
   </section>
 }
 
-const gallerySlides = [
+type GallerySlide = { src: string; srcSet?: string; alt: string; title: string }
+const galleryPhoto = (name: string, alt: string, title: string): GallerySlide => ({
+  src: `/assets/gallery/${name}-900.jpg`,
+  srcSet: `/assets/gallery/${name}-900.jpg 900w, /assets/gallery/${name}-1800.jpg 1800w`,
+  alt,
+  title,
+})
+
+const gallerySlides: GallerySlide[] = [
   { src: '/assets/hero/hawa-mahal-trees.webp', alt: 'Hawa Mahal framed by Jaipur trees', title: 'Jaipur' },
   { src: '/assets/hero/couple-back.png', alt: 'Jai and Yogita looking toward the palace', title: 'Jai & Yogita' },
+  galleryPhoto('jai-yogita-palace-close', 'Jai and Yogita seated together beside a painted palace wall', 'A Palace Moment'),
+  galleryPhoto('jai-yogita-white-arches', 'Jai and Yogita standing beneath white carved arches', 'Marble Arches'),
+  galleryPhoto('jai-yogita-together', 'Jai and Yogita sharing a quiet embrace', 'Together'),
+  galleryPhoto('jai-yogita-palace-portrait', 'Jai and Yogita posing together in front of a palace wall', 'Palace Stroll'),
+  galleryPhoto('jai-yogita-outdoors', 'Jai and Yogita embracing outdoors in the sunshine', 'Open Sky'),
+  galleryPhoto('jai-yogita-sitting', 'Jai seated with Yogita beside him in a green garden', 'A Quiet Afternoon'),
+  galleryPhoto('jai-yogita-elephant', 'Jai and Yogita seated together on a decorated elephant', 'A Royal Visit'),
   { src: '/assets/couple/groom.webp', alt: 'Portrait of Jai in wedding attire', title: 'Jai' },
   { src: '/assets/couple/bride.webp', alt: 'Portrait of Yogita in wedding attire', title: 'Yogita' },
-  { src: '/assets/ring-reveal/end-frame.png', alt: 'The couple revealing their wedding rings', title: 'The Rings' },
+  { src: '/assets/ring-reveal/end-frame.jpg', alt: 'The couple revealing their wedding rings', title: 'The Rings' },
   { src: '/assets/hawa-mahal.webp', alt: 'The Hawa Mahal in Jaipur', title: 'Hawa Mahal' },
-  { src: '/assets/ring-reveal/start-frame.png', alt: 'Two hands reaching toward one another', title: 'A Promise' },
+  { src: '/assets/ring-reveal/start-frame.jpg', alt: 'Two hands reaching toward one another', title: 'A Promise' },
 ]
 
 function Gallery() {
@@ -415,7 +421,7 @@ function Gallery() {
             onClick={() => offset === 0 ? undefined : goTo(slideIndex)}
             tabIndex={offset === 0 ? 0 : -1}
           >
-            <span className="gallery__photo"><img src={slide.src} alt={slide.alt} loading="lazy"/><span className="gallery__caption">{slide.title}</span></span>
+            <span className="gallery__photo">{visible && <img src={slide.src} srcSet={slide.srcSet} sizes={slide.srcSet ? '300px' : undefined} alt={slide.alt} loading={offset === 0 ? 'eager' : 'lazy'} decoding="async" fetchPriority={offset === 0 ? 'high' : 'auto'}/>}<span className="gallery__caption">{slide.title}</span></span>
           </button>
         })}
       </div>

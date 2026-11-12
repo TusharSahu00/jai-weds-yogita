@@ -475,32 +475,15 @@
 .day-contact__action--call{background:linear-gradient(140deg,#941c30,#7b1c31);color:#fff3de;border-color:#a36c39}
 .day-contact__action--whatsapp{background:rgba(255,251,239,.9)}
 .day-contact__aside{grid-column:1/-1;margin:17px 0 0;padding-top:13px;border-top:1px solid rgba(188,135,70,.24);color:#99785e;font:italic 14px 'Cormorant Garamond',serif;text-align:center}
-.wedding-close{position:relative;isolation:isolate;overflow:hidden;padding:56px 20px 36px;text-align:center;background:radial-gradient(ellipse at 50% 7%,#fff3d9 0%,#f4d5a9 54%,#e5bc88 100%);color:#642936}
-.wedding-close:before{content:'';position:absolute;inset:0;z-index:-1;opacity:.15;background:url('/assets/hero/floral-rangoli.webp') center/ min(100vw,690px) auto no-repeat;mask-image:linear-gradient(180deg,transparent,#000 28%,#000 78%,transparent)}
-.wedding-close__inner{position:relative;z-index:1;width:min(100%,700px);margin:auto;padding:31px 20px 27px;border:1px solid rgba(183,129,59,.6);border-radius:46% 46% 24px 24px / 70px 70px 24px 24px;background:linear-gradient(180deg,rgba(255,250,236,.72),rgba(255,242,215,.58));box-shadow:0 13px 35px rgba(104,55,34,.12),inset 0 0 0 5px rgba(255,255,247,.4)}
-.wedding-close__script{margin:0;color:#a96639;font:400 clamp(29px,5vw,42px)/1.2 'Brittany Signature','Cormorant Garamond',serif}
-.wedding-close h2{margin:6px 0 0;color:#812338;font:400 clamp(47px,9vw,76px)/1.04 'Kugile','Cormorant Garamond',serif;letter-spacing:-.035em}
-.wedding-close h2 span{color:#bd8547;font:400 .62em 'Brittany Signature','Cormorant Garamond',serif}
-.wedding-close__ornament{display:block;width:145px;margin:12px auto;color:#b77c3f}
-.wedding-close__date{margin:0;color:#99704d;font:500 10px 'DM Sans',sans-serif;letter-spacing:.2em;text-transform:uppercase}
-.wedding-close__date span{padding:0 5px;color:#b67c3f}
-.wedding-close__hashtag{display:inline-block;margin:15px 0 0;color:#9b283b;font:400 clamp(24px,5vw,34px) 'Brittany Signature','Cormorant Garamond',serif}
-.wedding-close__rule{display:flex;align-items:center;gap:11px;width:min(100%,250px);margin:17px auto 13px;color:#b47c43}
-.wedding-close__rule:before,.wedding-close__rule:after{content:'';height:1px;flex:1;background:linear-gradient(90deg,transparent,#bd8949)}
-.wedding-close__rule:after{background:linear-gradient(90deg,#bd8949,transparent)}
-.wedding-close__rule span{font-size:11px}
-.wedding-close__credit{max-width:510px;margin:0 auto;color:#775344;font:400 15px/1.55 'Cormorant Garamond',serif}
-.wedding-close__credit a,.wedding-close__phone{color:#812338;text-decoration:none;border-bottom:1px solid rgba(129,35,56,.4)}
-.wedding-close__credit a{font-weight:600}
-.wedding-close__phone{display:inline-block;margin-top:8px;font:600 10px 'DM Sans',sans-serif;letter-spacing:.08em}
-.wedding-close__credit a:hover,.wedding-close__phone:hover{border-color:#812338}
-@media(max-width:650px){.day-contact{padding:68px 16px 72px}.day-contact>.mandala-scroll--right{right:-105px;top:-68px;width:225px;opacity:.39}.day-contact>.mandala-scroll--left{left:-120px;bottom:-123px;width:255px;opacity:.4}.day-contact__heading{margin-bottom:25px}.day-contact__heading>p{font-size:28px}.day-contact__heading h2{font-size:clamp(38px,10.4vw,51px)}.day-contact__heading>span{font-size:8px;letter-spacing:.08em}.day-contact__card{grid-template-columns:1fr;padding:24px 20px 19px;border-radius:24px 24px 45px 24px;text-align:center}.day-contact__card:before{border-radius:17px 17px 38px 17px}.day-contact__badge{left:50%;transform:translateX(-50%)}.day-contact__copy{padding-top:13px}.day-contact__eyebrow{font-size:8px}.day-contact__copy h3{font-size:35px}.day-contact__role{font-size:15px}.day-contact__number{font-size:17px}.day-contact__actions{justify-content:center;margin-top:16px}.day-contact__action{min-width:110px}.day-contact__aside{margin-top:15px;font-size:13px}.wedding-close{padding:37px 14px 25px}.wedding-close__inner{padding:26px 14px 23px;border-radius:38% 38% 20px 20px / 54px 54px 20px 20px}.wedding-close h2{font-size:clamp(44px,12vw,62px)}.wedding-close__script{font-size:30px}.wedding-close__date{font-size:8px;letter-spacing:.15em}.wedding-close__credit{font-size:14px}.wedding-close__hashtag{margin-top:12px}}
+.wedding-close{position:relative;overflow:hidden;padding:23px 18px 25px;text-align:center;background:linear-gradient(180deg,#f6ddb4,#eac998);color:#775344}
+.wedding-close__credit{margin:0;font:400 14px/1.5 'Cormorant Garamond',serif;letter-spacing:.035em}
+.wedding-close__credit a{color:#812338;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(129,35,56,.4)}
+.wedding-close__credit a:hover{border-color:#812338}
+@media(max-width:650px){.day-contact{padding:68px 16px 72px}.day-contact>.mandala-scroll--right{right:-105px;top:-68px;width:225px;opacity:.39}.day-contact>.mandala-scroll--left{left:-120px;bottom:-123px;width:255px;opacity:.4}.day-contact__heading{margin-bottom:25px}.day-contact__heading>p{font-size:28px}.day-contact__heading h2{font-size:clamp(38px,10.4vw,51px)}.day-contact__heading>span{font-size:8px;letter-spacing:.08em}.day-contact__card{grid-template-columns:1fr;padding:24px 20px 19px;border-radius:24px 24px 45px 24px;text-align:center}.day-contact__card:before{border-radius:17px 17px 38px 17px}.day-contact__badge{left:50%;transform:translateX(-50%)}.day-contact__copy{padding-top:13px}.day-contact__eyebrow{font-size:8px}.day-contact__copy h3{font-size:35px}.day-contact__role{font-size:15px}.day-contact__number{font-size:17px}.day-contact__actions{justify-content:center;margin-top:16px}.day-contact__action{min-width:110px}.day-contact__aside{margin-top:15px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.day-contact__action{transition:none}}
 .day-contact{padding-block:59px 62px}
 .day-contact>.mandala-scroll--right{display:none}
-.wedding-close{padding-block:42px 24px}
-.wedding-close__phone{display:none}
-@media(max-width:650px){.day-contact{padding-block:51px 53px}.wedding-close{padding-block:31px 20px}}
+@media(max-width:650px){.day-contact{padding-block:51px 53px}.wedding-close{padding-block:19px 21px}}
 
 
 
