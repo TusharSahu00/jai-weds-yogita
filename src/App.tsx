@@ -34,14 +34,10 @@ function PersonIcon() {
 function RSVPSection() {
   const [attendance, setAttendance] = useState<'yes' | 'no'>('yes')
   const [guestCount, setGuestCount] = useState(1)
-  const [submitted, setSubmitted] = useState(false)
+  const [submitted, setSubmitted] = useState(() => new URLSearchParams(window.location.search).get('rsvp') === 'sent')
   const [guestName, setGuestName] = useState('')
   const updateCount = (amount: number) => setGuestCount(count => Math.min(20, Math.max(1, count + amount)))
-
-  const submitRSVP = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setSubmitted(true)
-  }
+  const returnUrl = `${window.location.origin}${window.location.pathname}?rsvp=sent#rsvp`
 
   return <section className="rsvp" id="rsvp" aria-labelledby="rsvp-title">
     <Mandala side="right"/><Mandala side="left"/>
@@ -51,7 +47,11 @@ function RSVPSection() {
       <Ornament className="rsvp__ornament"/>
       <span>Jai &amp; Yogita · 21 November 2026</span>
     </header>
-    <form className="rsvp-card" onSubmit={submitRSVP}>
+    <form className="rsvp-card" action="https://formsubmit.co/sahutushar538@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="Wedding RSVP — Jai & Yogita" />
+      <input type="hidden" name="_next" value={returnUrl} />
+      <input type="hidden" name="number-attending" value={attendance === 'yes' ? guestCount : 0} />
+      <input type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
       <div className="rsvp-card__intro"><span className="rsvp-card__seal" aria-hidden="true">J<span>&amp;</span>Y</span><h3>Will you join us?</h3><p>We would be delighted to celebrate together.</p></div>
       <label className="rsvp-field">
         <span className="rsvp-field__label">Your name</span>
@@ -84,8 +84,8 @@ function RSVPSection() {
         <span className="rsvp-field__label">A wish for the couple <small>Optional</small></span>
         <textarea name="message" rows={3} maxLength={400} placeholder="Write a note for Jai & Yogita…" onChange={() => setSubmitted(false)}/>
       </label>
-      <button className="rsvp-submit" type="submit"><span>{submitted ? 'Reply prepared' : 'Send your reply'}</span><span aria-hidden="true">↗</span></button>
-      {submitted && <p className="rsvp-status" role="status">Thank you, {guestName}. This is a preview for now; your reply has not been sent to the family yet.</p>}
+      <button className="rsvp-submit" type="submit"><span>Send your reply</span><span aria-hidden="true">↗</span></button>
+      {submitted && <p className="rsvp-status" role="status">Thank you! Your reply has been sent to the family.</p>}
     </form>
     <p className="rsvp__footnote">With love, <strong>The Mothya Family</strong></p>
   </section>
@@ -338,20 +338,17 @@ const galleryPhoto = (name: string, alt: string, title: string): GallerySlide =>
 })
 
 const gallerySlides: GallerySlide[] = [
-  { src: '/assets/hero/hawa-mahal-trees.webp', alt: 'Hawa Mahal framed by Jaipur trees', title: 'Jaipur' },
-  { src: '/assets/hero/couple-back.png', alt: 'Jai and Yogita looking toward the palace', title: 'Jai & Yogita' },
   galleryPhoto('jai-yogita-palace-close', 'Jai and Yogita seated together beside a painted palace wall', 'A Palace Moment'),
   galleryPhoto('jai-yogita-white-arches', 'Jai and Yogita standing beneath white carved arches', 'Marble Arches'),
   galleryPhoto('jai-yogita-together', 'Jai and Yogita sharing a quiet embrace', 'Together'),
   galleryPhoto('jai-yogita-palace-portrait', 'Jai and Yogita posing together in front of a palace wall', 'Palace Stroll'),
+  galleryPhoto('jai-yogita-palace-portrait-new', 'Jai and Yogita together before an ornate Jaipur palace', 'Palace Portrait'),
   galleryPhoto('jai-yogita-outdoors', 'Jai and Yogita embracing outdoors in the sunshine', 'Open Sky'),
+  galleryPhoto('jai-yogita-garden-walk', 'Jai and Yogita sharing a quiet moment beneath the trees', 'Garden Walk'),
+  galleryPhoto('jai-yogita-palace-walk', 'Jai and Yogita walking together in the palace gardens', 'Side by Side'),
   galleryPhoto('jai-yogita-sitting', 'Jai seated with Yogita beside him in a green garden', 'A Quiet Afternoon'),
   galleryPhoto('jai-yogita-elephant', 'Jai and Yogita seated together on a decorated elephant', 'A Royal Visit'),
-  { src: '/assets/couple/groom.webp', alt: 'Portrait of Jai in wedding attire', title: 'Jai' },
-  { src: '/assets/couple/bride.webp', alt: 'Portrait of Yogita in wedding attire', title: 'Yogita' },
-  { src: '/assets/ring-reveal/end-frame.jpg', alt: 'The couple revealing their wedding rings', title: 'The Rings' },
-  { src: '/assets/hawa-mahal.webp', alt: 'The Hawa Mahal in Jaipur', title: 'Hawa Mahal' },
-  { src: '/assets/ring-reveal/start-frame.jpg', alt: 'Two hands reaching toward one another', title: 'A Promise' },
+  galleryPhoto('jai-yogita-elephant-encounter', 'Jai and Yogita meeting an elephant during their visit', 'An Elephant Encounter'),
 ]
 
 function Gallery() {
@@ -448,11 +445,14 @@ type WeddingMoment = {
   date: string
   times: string[]
   place?: string[]
+  rows?: { hindi: string; title: string }[]
 }
 
 const weddingMoments: WeddingMoment[] = [
-  { id: 'sangeet', hindi: 'संगीत', title: 'Sangeet', date: '19 NOVEMBER 2026', times: [] },
-  { id: 'haldi', hindi: 'हल्दी', title: 'Haldi', date: '19 NOVEMBER 2026', times: [] },
+  { id: 'sangeet-haldi', hindi: '19 NOVEMBER 2026', title: 'Sangeet & Haldi', date: '19 NOVEMBER 2026', times: [], rows: [
+    { hindi: 'संगीत', title: 'Sangeet' },
+    { hindi: 'हल्दी', title: 'Haldi' },
+  ] },
   { id: 'nikasi', hindi: 'निकासी', title: 'Nikasi', date: '21 NOVEMBER 2026', times: ['9:15 AM'], place: ['Family residence'] },
   { id: 'lagan-sagai', hindi: 'लग्न-सगाई', title: 'Lagan–Sagai', date: '21 NOVEMBER 2026', times: ['11:00 AM'] },
   { id: 'baraat', hindi: 'बारात रवानगी', title: 'Baraat Departure', date: '21 NOVEMBER 2026', times: ['6:00 PM'], place: ['Shiv Shakti Enterprises', 'Near Kasturi Bagh', 'Proceeding to N. R. Paradise'] },
@@ -465,9 +465,15 @@ function EventScroll({ event, index }: { event: WeddingMoment; index: number }) 
       <img className="event-scroll__art" src="/assets/timeline/embroidered-banner.webp" alt="" aria-hidden="true" />
       <div className="event-scroll__paper">
         <span className="event-scroll__number">0{index}</span>
-        <p className="event-scroll__eyebrow">{event.hindi}</p>
-        <h3>{event.title}</h3>
-        <div className="event-scroll__ornament" aria-hidden="true"><span/><b>✦</b><span/></div>
+        {event.rows ? <div className="event-scroll__rows">{event.rows.map((row, rowIndex) => <div className="event-scroll__row" key={row.title}>
+          <p className="event-scroll__eyebrow">{row.hindi}</p>
+          <h3>{row.title}</h3>
+          {rowIndex < event.rows!.length - 1 && <div className="event-scroll__ornament" aria-hidden="true"><span/><b>✦</b><span/></div>}
+        </div>)}</div> : <>
+          <p className="event-scroll__eyebrow">{event.hindi}</p>
+          <h3>{event.title}</h3>
+          <div className="event-scroll__ornament" aria-hidden="true"><span/><b>✦</b><span/></div>
+        </>}
         {event.place?.length ? <p className="event-scroll__where">{event.place.map((line, lineIndex) => lineIndex === 0 ? <Fragment key={line}>{line}<br/></Fragment> : <span key={line}>{line}<br/></span>)}</p> : null}
       </div>
     </div>
@@ -494,10 +500,57 @@ function Festivities() {
   </section>
 }
 
+function DoorEntry({ onBegin, onReveal, onComplete, reducedMotion }: { onBegin: () => void; onReveal: () => void; onComplete: () => void; reducedMotion: boolean }) {
+  const stage = useRef<HTMLDivElement>(null)
+  const [opening, setOpening] = useState(false)
+
+  const openDoors = () => {
+    if (opening) return
+    setOpening(true)
+    onBegin()
+    if (reducedMotion) {
+      onReveal()
+      onComplete()
+      return
+    }
+    gsap.timeline({ onComplete })
+      .to('.door-entry__prompt', { autoAlpha: 0, scale: .88, duration: .2, ease: 'power2.in' }, 0)
+      .to('.door-entry__light', { autoAlpha: .9, scale: 1.08, duration: .75, ease: 'power2.out' }, .06)
+      .to('.door-entry__vortex', { autoAlpha: .9, scale: 1, duration: .9, ease: 'power3.out' }, .28)
+      .to('.door-entry__vortex-ring', { rotation: 240, stagger: .04, duration: 1.6, ease: 'power2.inOut' }, .28)
+      .to('.door-entry__door--left', { rotationY: 108, duration: 1.5, ease: 'power3.inOut' }, .08)
+      .to('.door-entry__door--right', { rotationY: -108, duration: 1.5, ease: 'power3.inOut' }, .08)
+      .to('.door-entry__stage', { scale: 1.18, z: 420, autoAlpha: 0, duration: .9, ease: 'power3.in' }, 1.38)
+      .to('.door-entry__backdrop', { scale: 1.16, filter: 'blur(8px)', duration: .9, ease: 'power3.in' }, 1.38)
+      .to('.door-entry__vortex', { scale: 2.7, autoAlpha: 0, duration: .85, ease: 'power3.in' }, 1.38)
+      .to('.door-entry__light', { autoAlpha: 0, scale: 2.4, duration: .85, ease: 'power2.in' }, 1.38)
+      .call(onReveal, [], 1.62)
+      .to('.door-entry', { autoAlpha: 0, duration: .38, ease: 'power1.out' }, 2.12)
+  }
+
+  return <div className="door-entry" ref={stage} role="dialog" aria-modal="true" aria-label="Open the wedding invitation">
+    <div className="door-entry__backdrop"/>
+    <div className="door-entry__glow" aria-hidden="true"/>
+    <div className="door-entry__light" aria-hidden="true"/>
+    <div className="door-entry__vortex" aria-hidden="true"><i className="door-entry__vortex-ring"/><i className="door-entry__vortex-ring"/><i className="door-entry__vortex-ring"/><span/></div>
+    <div className="door-entry__stage" aria-hidden="true">
+      <div className="door-entry__door door-entry__door--left"/>
+      <div className="door-entry__door door-entry__door--right"/>
+    </div>
+    <button className="door-entry__prompt" type="button" onClick={openDoors} disabled={opening} aria-label="Tap to open the doors">
+      <span className="door-entry__prompt-dot" aria-hidden="true">✦</span><span>Tap to open</span>
+    </button>
+    <p className="door-entry__names">Jai <i>✦</i> Yogita</p>
+  </div>
+}
+
 export default function App() {
   const root = useRef<HTMLDivElement>(null)
+  const music = useRef<HTMLAudioElement>(null)
   const [time, setTime] = useState(remainingTime)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [entered, setEntered] = useState(false)
+  const [musicPlaying, setMusicPlaying] = useState(false)
 
   useEffect(() => {
     const timer = window.setInterval(() => setTime(remainingTime()), 1000)
@@ -507,13 +560,52 @@ export default function App() {
     return () => { window.clearInterval(timer); media.removeEventListener('change', sync) }
   }, [])
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    if (!entered) document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [entered])
+
+  const beginCelebration = () => {
+    const player = music.current
+    if (!player) return
+    player.volume = .58
+    void player.play().then(() => setMusicPlaying(true)).catch(() => setMusicPlaying(false))
+  }
+
+  const revealCelebration = () => {
+    if (reducedMotion) return
+    const paths = gsap.utils.toArray<SVGPathElement>('.hero .ganesh-mark [data-draw]')
+    paths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
+    gsap.timeline()
+      .fromTo('.hero-palace', { clipPath: 'inset(100% 0 0 0)', scale: 1.08 }, { clipPath: 'inset(0% 0 0 0)', scale: 1, duration: 1.52, ease: 'power3.out' }, 0)
+      .fromTo('.hero-railing', { yPercent: 10, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 1.1, ease: 'power3.out' }, .12)
+      .fromTo('.hero-arch', { scale: .93, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 1.2, ease: 'power3.out' }, .12)
+      .fromTo('.hero-couple', { y: 100, autoAlpha: 0, scale: .94 }, { y: 0, autoAlpha: 1, scale: 1, duration: 1.3, ease: 'power3.out' }, .18)
+      .fromTo('.hero-content', { y: 34, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .82, ease: 'power3.out' }, .48)
+      .fromTo('.hero-name', { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .68, stagger: .1, ease: 'power3.out' }, .7)
+      .to(paths, { strokeDashoffset: 0, duration: 1.05, stagger: .04, ease: 'power2.inOut' }, .62)
+  }
+
+  const finishEntry = () => setEntered(true)
+
+  const toggleMusic = () => {
+    const player = music.current
+    if (!player) return
+    if (player.paused) {
+      void player.play().then(() => setMusicPlaying(true)).catch(() => setMusicPlaying(false))
+    } else {
+      player.pause()
+      setMusicPlaying(false)
+    }
+  }
+
   useGSAP(() => {
     if (!root.current || reducedMotion) return
+    gsap.set('.hero-palace', { clipPath: 'inset(100% 0 0 0)' })
+    gsap.set('.hero-railing, .hero-arch, .hero-couple, .hero-content', { autoAlpha: 0 })
     const paths = gsap.utils.toArray<SVGPathElement>('.hero .ganesh-mark [data-draw]', root.current)
     paths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
-    gsap.to(paths, { strokeDashoffset: 0, duration: 2.1, stagger: .06, ease: 'power2.inOut' })
-    gsap.from('.hero-name', { y: 28, autoAlpha: 0, duration: 1.15, stagger: .14, ease: 'power3.out', delay: .35 })
-    gsap.from('.hero-couple', { y: 22, autoAlpha: 0, duration: 1.2, ease: 'power2.out', delay: .5 })
     const markPaths = gsap.utils.toArray<SVGPathElement>('.auspicious-mark path', root.current)
     markPaths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
     gsap.timeline({ scrollTrigger: { trigger: '.auspicious-mark', start: 'top 85%', toggleActions: 'play none none reverse' } })
@@ -557,6 +649,9 @@ export default function App() {
   }, { scope: root, dependencies: [reducedMotion], revertOnUpdate: true })
 
   return <div className="site" ref={root}>
+    <audio ref={music} src="/assets/entry/gehra-hua-dhurandhar.mp3" loop preload="none" />
+    {!entered && <DoorEntry onBegin={beginCelebration} onReveal={revealCelebration} onComplete={finishEntry} reducedMotion={reducedMotion}/>}
+    {entered && <button className="music-toggle" type="button" onClick={toggleMusic} aria-label={musicPlaying ? 'Pause wedding music' : 'Play wedding music'} aria-pressed={musicPlaying}><span aria-hidden="true">{musicPlaying ? '♫' : '♪'}</span><small>{musicPlaying ? 'Music on' : 'Music off'}</small></button>}
     <a className="sr-only focus-link" href="#details">Skip to celebration details</a>
     <main>
       <section className="hero" aria-labelledby="hero-title">
