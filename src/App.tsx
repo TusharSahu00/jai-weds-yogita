@@ -338,6 +338,7 @@ const galleryPhoto = (name: string, alt: string, title: string): GallerySlide =>
 })
 
 const gallerySlides: GallerySlide[] = [
+  galleryPhoto('jai-yogita-elephant-encounter', 'Jai and Yogita meeting an elephant during their visit', 'An Elephant Encounter'),
   galleryPhoto('jai-yogita-palace-close', 'Jai and Yogita seated together beside a painted palace wall', 'A Palace Moment'),
   galleryPhoto('jai-yogita-white-arches', 'Jai and Yogita standing beneath white carved arches', 'Marble Arches'),
   galleryPhoto('jai-yogita-together', 'Jai and Yogita sharing a quiet embrace', 'Together'),
@@ -348,7 +349,6 @@ const gallerySlides: GallerySlide[] = [
   galleryPhoto('jai-yogita-palace-walk', 'Jai and Yogita walking together in the palace gardens', 'Side by Side'),
   galleryPhoto('jai-yogita-sitting', 'Jai seated with Yogita beside him in a green garden', 'A Quiet Afternoon'),
   galleryPhoto('jai-yogita-elephant', 'Jai and Yogita seated together on a decorated elephant', 'A Royal Visit'),
-  galleryPhoto('jai-yogita-elephant-encounter', 'Jai and Yogita meeting an elephant during their visit', 'An Elephant Encounter'),
 ]
 
 function Gallery() {
@@ -582,8 +582,8 @@ export default function App() {
 
   const revealCelebration = () => {
     if (reducedMotion) return
-    const paths = gsap.utils.toArray<SVGPathElement>('.hero .ganesh-mark [data-draw]')
-    paths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
+    const fill = root.current?.querySelectorAll<SVGRectElement>('.hero .ganesh-mark [data-fill]')
+    if (!fill || fill.length < 4) return
     gsap.timeline()
       .fromTo('.hero-palace', { clipPath: 'inset(100% 0 0 0)', scale: 1.08 }, { clipPath: 'inset(0% 0 0 0)', scale: 1, duration: 1.52, ease: 'power3.out' }, 0)
       .fromTo('.hero-railing', { yPercent: 10, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 1.1, ease: 'power3.out' }, .12)
@@ -591,7 +591,10 @@ export default function App() {
       .fromTo('.hero-couple', { y: 100, autoAlpha: 0, scale: .94 }, { y: 0, autoAlpha: 1, scale: 1, duration: 1.3, ease: 'power3.out' }, .18)
       .fromTo('.hero-content', { y: 34, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .82, ease: 'power3.out' }, .48)
       .fromTo('.hero-name', { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .68, stagger: .1, ease: 'power3.out' }, .7)
-      .to(paths, { strokeDashoffset: 0, duration: 1.05, stagger: .04, ease: 'power2.inOut' }, .62)
+      .to(fill[0], { attr: { height: 572.5 }, duration: 1.85, ease: 'power2.inOut' }, .62)
+      .to(fill[1], { attr: { y: 572.5, height: 572.5 }, duration: 1.85, ease: 'power2.inOut' }, .62)
+      .to(fill[2], { attr: { width: 420.5 }, duration: 1.85, ease: 'power2.inOut' }, .67)
+      .to(fill[3], { attr: { x: 420.5, width: 420.5 }, duration: 1.85, ease: 'power2.inOut' }, .67)
   }
 
   const finishEntry = () => setEntered(true)
@@ -611,8 +614,7 @@ export default function App() {
     if (!root.current || reducedMotion) return
     gsap.set('.hero-palace', { clipPath: 'inset(100% 0 0 0)' })
     gsap.set('.hero-railing, .hero-arch, .hero-couple, .hero-content', { autoAlpha: 0 })
-    const paths = gsap.utils.toArray<SVGPathElement>('.hero .ganesh-mark [data-draw]', root.current)
-    paths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
+    const detailsFill = root.current.querySelectorAll<SVGRectElement>('.details-ganesh [data-fill]')
     const markPaths = gsap.utils.toArray<SVGPathElement>('.auspicious-mark path', root.current)
     markPaths.forEach(path => { const length = path.getTotalLength(); gsap.set(path, { strokeDasharray: length, strokeDashoffset: length }) })
     gsap.timeline({ scrollTrigger: { trigger: '.auspicious-mark', start: 'top 85%', toggleActions: 'play none none reverse' } })
@@ -649,6 +651,13 @@ export default function App() {
     gsap.to('.gallery .mandala-scroll--left', { rotation: 900, ease: 'none', scrollTrigger: { trigger: '.gallery', start: 'top bottom', end: 'bottom top', scrub: .35 } })
     gsap.to('.gallery .mandala-scroll--right', { rotation: -900, ease: 'none', scrollTrigger: { trigger: '.gallery', start: 'top bottom', end: 'bottom top', scrub: .35 } })
     gsap.from('.details-card', { y: 48, opacity: 0, duration: 1, ease: 'power2.out', scrollTrigger: { trigger: '.details', start: 'top 75%', toggleActions: 'play none none reverse' } })
+    if (detailsFill.length >= 4) {
+      const detailReveal = gsap.timeline({ scrollTrigger: { trigger: '.details-card', start: 'top 78%', toggleActions: 'play none none reverse' } })
+      detailReveal.to(detailsFill[0], { attr: { height: 572.5 }, duration: 1.85, ease: 'power2.inOut' }, 0)
+        .to(detailsFill[1], { attr: { y: 572.5, height: 572.5 }, duration: 1.85, ease: 'power2.inOut' }, 0)
+        .to(detailsFill[2], { attr: { width: 420.5 }, duration: 1.85, ease: 'power2.inOut' }, .05)
+        .to(detailsFill[3], { attr: { x: 420.5, width: 420.5 }, duration: 1.85, ease: 'power2.inOut' }, .05)
+    }
     gsap.from('.rsvp__heading > *, .rsvp-card', { y: 28, opacity: 0, stagger: .12, duration: .8, ease: 'power2.out', scrollTrigger: { trigger: '.rsvp', start: 'top 78%', toggleActions: 'play none none reverse' } })
     gsap.from('.wishes__heading > *, .wish-card, .wishes-form', { y: 30, opacity: 0, stagger: .1, duration: .75, ease: 'power2.out', scrollTrigger: { trigger: '.wishes', start: 'top 78%', toggleActions: 'play none none reverse' } })
     gsap.from('.day-contact__heading > *, .day-contact__card', { y: 28, opacity: 0, stagger: .12, duration: .8, ease: 'power2.out', scrollTrigger: { trigger: '.day-contact', start: 'top 78%', toggleActions: 'play none none reverse' } })
@@ -668,7 +677,7 @@ export default function App() {
         <img className="hero-railing" src="/assets/hero/gallery-railing.png" alt=""/>
         <img className="hero-arch" src="/assets/hero/carved-arch.png" alt=""/>
         <div className="hero-content"><GaneshMark className="ganesh-mark"/><h1 id="hero-title"><span className="hero-name">Jai</span><span className="hero-amp">&</span><span className="hero-name">Yogita</span></h1></div>
-        <div className="scroll-invite" aria-hidden="true">Scroll to enter <span>↓</span></div>
+        <div className="scroll-invite" aria-hidden="true"><span>↓</span></div>
       </section>
 
       <section className="celebration-section" aria-labelledby="invitation-title">
