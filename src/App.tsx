@@ -566,6 +566,13 @@ export default function App() {
     return () => { document.body.style.overflow = previousOverflow }
   }, [entered])
 
+  useEffect(() => {
+    const player = music.current
+    if (!player) return
+    player.volume = .58
+    void player.play().then(() => setMusicPlaying(true)).catch(() => setMusicPlaying(false))
+  }, [])
+
   const beginCelebration = () => {
     const player = music.current
     if (!player) return
@@ -649,9 +656,9 @@ export default function App() {
   }, { scope: root, dependencies: [reducedMotion], revertOnUpdate: true })
 
   return <div className="site" ref={root}>
-    <audio ref={music} src="/assets/entry/gehra-hua-dhurandhar.mp3" loop preload="none" />
+    <audio ref={music} src="/assets/entry/gehra-hua-dhurandhar.mp3" autoPlay loop preload="auto" />
     {!entered && <DoorEntry onBegin={beginCelebration} onReveal={revealCelebration} onComplete={finishEntry} reducedMotion={reducedMotion}/>}
-    {entered && <button className="music-toggle" type="button" onClick={toggleMusic} aria-label={musicPlaying ? 'Pause wedding music' : 'Play wedding music'} aria-pressed={musicPlaying}><span aria-hidden="true">{musicPlaying ? '♫' : '♪'}</span><small>{musicPlaying ? 'Music on' : 'Music off'}</small></button>}
+    {entered && <button className="music-toggle" type="button" onClick={toggleMusic} aria-label={musicPlaying ? 'Turn music off' : 'Turn music on'} aria-pressed={musicPlaying}><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 8l12-2M9 18a3.5 2.5 0 1 1-3.5-2.5A3.5 2.5 0 0 1 9 18Zm12-2a3.5 2.5 0 1 1-3.5-2.5A3.5 2.5 0 0 1 21 16Z"/></svg><small>{musicPlaying ? 'On' : 'Off'}</small></button>}
     <a className="sr-only focus-link" href="#details">Skip to celebration details</a>
     <main>
       <section className="hero" aria-labelledby="hero-title">
