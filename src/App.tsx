@@ -412,6 +412,7 @@ function Gallery() {
           return <button
             className={`gallery__slide${offset === 0 ? ' is-active' : ''}${animateRing ? '' : ' is-recentering'}`}
             data-position={offset === 0 ? 'current' : Math.abs(offset) === 1 ? 'adjacent' : 'far'}
+            data-offset={offset}
             type="button"
             key={`${physicalIndex}-${slide.title}`}
             style={{ '--gallery-angle': `${offset * 360 / slideCount}deg`, '--gallery-offset': offset } as CSSProperties}
