@@ -34,10 +34,43 @@ function PersonIcon() {
 function RSVPSection() {
   const [attendance, setAttendance] = useState<'yes' | 'no'>('yes')
   const [guestCount, setGuestCount] = useState(1)
-  const [submitted, setSubmitted] = useState(() => new URLSearchParams(window.location.search).get('rsvp') === 'sent')
   const [guestName, setGuestName] = useState('')
+  const [sending, setSending] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
   const updateCount = (amount: number) => setGuestCount(count => Math.min(20, Math.max(1, count + amount)))
-  const returnUrl = `${window.location.origin}${window.location.pathname}?rsvp=sent#rsvp`
+
+  useEffect(() => {
+    if (!confirmationOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setConfirmationOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [confirmationOpen])
+
+  const submitRsvp = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSending(true)
+    setSubmitError('')
+    try {
+      const formData = Object.fromEntries(new FormData(event.currentTarget).entries())
+      const response = await fetch('https://formsubmit.co/ajax/sahutushar538@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      const result = await response.json() as { success?: boolean | string; message?: string }
+      if (!response.ok || result.success === false || result.success === 'false') {
+        throw new Error(result.message || 'RSVP delivery failed')
+      }
+      setConfirmationOpen(true)
+    } catch {
+      setSubmitError('Your reply could not be sent just now. Please check your connection and try again.')
+    } finally {
+      setSending(false)
+    }
+  }
 
   return <section className="rsvp" id="rsvp" aria-labelledby="rsvp-title">
     <Mandala side="right"/><Mandala side="left"/>
@@ -47,25 +80,24 @@ function RSVPSection() {
       <Ornament className="rsvp__ornament"/>
       <span>Jai &amp; Yogita · 21 November 2026</span>
     </header>
-    <form className="rsvp-card" action="https://formsubmit.co/sahutushar538@gmail.com" method="POST">
+    <form className="rsvp-card" onSubmit={submitRsvp}>
       <input type="hidden" name="_subject" value="Wedding RSVP — Jai & Yogita" />
-      <input type="hidden" name="_next" value={returnUrl} />
       <input type="hidden" name="number-attending" value={attendance === 'yes' ? guestCount : 0} />
       <input type="text" name="_honey" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: 'none' }} />
       <div className="rsvp-card__intro"><span className="rsvp-card__seal" aria-hidden="true">J<span>&amp;</span>Y</span><h3>Will you join us?</h3><p>We would be delighted to celebrate together.</p></div>
       <label className="rsvp-field">
         <span className="rsvp-field__label">Your name</span>
-        <span className="rsvp-field__control"><PersonIcon/><input type="text" name="guest-name" autoComplete="name" placeholder="Full name" value={guestName} onChange={event => {setGuestName(event.target.value);setSubmitted(false)}} required /></span>
+        <span className="rsvp-field__control"><PersonIcon/><input type="text" name="guest-name" autoComplete="name" placeholder="Full name" value={guestName} onChange={event => setGuestName(event.target.value)} required /></span>
       </label>
       <fieldset className="rsvp-attendance">
         <legend className="rsvp-field__label">Will you be attending?</legend>
         <label className={`rsvp-choice${attendance === 'yes' ? ' is-selected' : ''}`}>
-          <input type="radio" name="attendance" value="yes" checked={attendance === 'yes'} onChange={() => {setAttendance('yes');setSubmitted(false)}}/>
+          <input type="radio" name="attendance" value="yes" checked={attendance === 'yes'} onChange={() => setAttendance('yes')}/>
           <span className="rsvp-choice__heart" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 27S4 19.5 4 11.5C4 5.7 11.2 3 16 9c4.8-6 12-3.3 12 2.5C28 19.5 16 27 16 27Z"/></svg></span>
           <strong>Joyfully accept</strong><small>We’ll be there</small>
         </label>
         <label className={`rsvp-choice${attendance === 'no' ? ' is-selected' : ''}`}>
-          <input type="radio" name="attendance" value="no" checked={attendance === 'no'} onChange={() => {setAttendance('no');setSubmitted(false)}}/>
+          <input type="radio" name="attendance" value="no" checked={attendance === 'no'} onChange={() => setAttendance('no')}/>
           <span className="rsvp-choice__heart" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 27S4 19.5 4 11.5C4 5.7 11.2 3 16 9c4.8-6 12-3.3 12 2.5C28 19.5 16 27 16 27Z"/><path d="m7 7 18 18"/></svg></span>
           <strong>Regretfully decline</strong><small>With you in spirit</small>
         </label>
@@ -82,11 +114,22 @@ function RSVPSection() {
       </div>
       <label className="rsvp-field rsvp-field--message">
         <span className="rsvp-field__label">A wish for the couple <small>Optional</small></span>
-        <textarea name="message" rows={3} maxLength={400} placeholder="Write a note for Jai & Yogita…" onChange={() => setSubmitted(false)}/>
+        <textarea name="message" rows={3} maxLength={400} placeholder="Write a note for Jai & Yogita…" />
       </label>
-      <button className="rsvp-submit" type="submit"><span>Send your reply</span><span aria-hidden="true">↗</span></button>
-      {submitted && <p className="rsvp-status" role="status">Thank you! Your reply has been sent to the family.</p>}
+      <button className="rsvp-submit" type="submit" disabled={sending}><span>{sending ? 'Sending your reply…' : 'Send your reply'}</span><span aria-hidden="true">{sending ? '…' : '↗'}</span></button>
+      {submitError && <p className="rsvp-status rsvp-status--error" role="alert">{submitError}</p>}
     </form>
+    {confirmationOpen && <div className="rsvp-confirmation" role="presentation" onMouseDown={event => {if (event.target === event.currentTarget) setConfirmationOpen(false)}}>
+      <section className="rsvp-confirmation__card" role="dialog" aria-modal="true" aria-labelledby="rsvp-confirmation-title" aria-describedby="rsvp-confirmation-copy">
+        <button className="rsvp-confirmation__close" type="button" onClick={() => setConfirmationOpen(false)} aria-label="Close message">×</button>
+        <span className="rsvp-confirmation__seal" aria-hidden="true"><span>✦</span></span>
+        <p className="rsvp-confirmation__eyebrow">A note from the family</p>
+        <h3 id="rsvp-confirmation-title">{attendance === 'yes' ? `We can’t wait to celebrate, ${guestName.trim()}!` : `Thank you for letting us know, ${guestName.trim()}.`}</h3>
+        <Ornament className="rsvp-confirmation__ornament" />
+        <p id="rsvp-confirmation-copy">{attendance === 'yes' ? 'Your reply has reached Jai & Yogita’s family. We look forward to sharing a beautiful day together.' : 'We’ll keep your warm wishes close and celebrate you in spirit. Thank you for being part of their story.'}</p>
+        <button className="rsvp-confirmation__done" type="button" onClick={() => setConfirmationOpen(false)}>With love, Jai & Yogita</button>
+      </section>
+    </div>}
     <p className="rsvp__footnote">With love, <strong>The Mothya Family</strong></p>
   </section>
 }
